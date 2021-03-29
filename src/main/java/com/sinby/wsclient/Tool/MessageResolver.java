@@ -34,14 +34,15 @@ public class MessageResolver {
     /**
      * 启动字符串解析器
      * @param msg
+     * @param scalesIp
      */
     public void initResolver(String msg,String scalesIp){
         this.current_ip = scalesIp;
-        Object msgObj = getJsonFromMsg(msg);
+        Object msgObj = getJsonFromMsg(msg);    //校验数据完整性
 
         if(msgObj != null){
-            MessageVO messageVO = JSON.parseObject(msgObj.toString(), MessageVO.class);
-            Map<String, DetailVO> map = messageVO.getHr().getData();
+            MessageVO messageVO = JSON.parseObject(msgObj.toString(), MessageVO.class);     //粗略解析数据
+            Map<String, DetailVO> map = messageVO.getHr().getData();    //精解析
             insertDataOfMsg(map, scalesIp);
         }
     }
