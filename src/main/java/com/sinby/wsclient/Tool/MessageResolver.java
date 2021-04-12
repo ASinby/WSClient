@@ -1,6 +1,5 @@
 package com.sinby.wsclient.Tool;
 
-import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sinby.wsclient.Dao.TableDao;
@@ -48,15 +47,13 @@ public class MessageResolver {
     }
 
     /**
-     * 将有用的重量数据插入数据中
-     * @param param
-     * @param scalesIp
+     * 将有用的重量数据插入数据库中
+     * @param param 传入电文
+     * @param scalesIp  秤IP
      */
     public void insertDataOfMsg(Map<String, DetailVO> param, String scalesIp){
 
         TableVO tableVO = new TableVO();
-
-//        TableDao tableDao = new TableDao();
 
         String onweighter = "0";    //车辆是否上秤
         String stabilized = "0";    //重量是否稳定
@@ -94,15 +91,11 @@ public class MessageResolver {
 
             }
 
-            tableVO.setScalesNo(scalesIp);
-//            tableVO.setTm(DateUtil.now());
+            tableVO.setScalesNo(scalesIp);  //设置秤IP
 
-//            logger.info("插入数据: "+tableVO.toString());
-
-//            logger.info("tableDao: "+tableDao);
             try {
-                int n = tableDao.addTable(tableVO);
-//                logger.info("成功插入 "+n+" 条数据!");
+                int n = tableDao.addTable(tableVO); //插入数据
+
             } catch (Exception e) {
                 e.printStackTrace();
                 logger.warning("插入数据异常: "+e.getMessage());
@@ -120,26 +113,22 @@ public class MessageResolver {
 
         Object jsonObj = new JSONObject();
 
-        int msgLen = msg.length();
-
-//        logger.info("=========== 电文长度："+msgLen+" ==============");
-
         // 消息处理（字符截取)
         recvStr += msg; // 所有未处理部分
 
         // 查找电文结尾"</SP>"
         int offset = recvStr.indexOf(EOMS);
 
-        while (offset >= 0){
+        if (offset >= 0){
 
-            // 获取到完整电文
-            recvMsg += recvStr.substring(0, offset);
+            recvMsg += recvStr.substring(0, offset);    //去尾</SP>
 
             // 判断一下电文头，确保电文完整性
             if (recvMsg.substring(0, BOML).equals(BOMS)){
                 // 去除电文定向
                 int pos = recvMsg.indexOf('|');
 
+                //去头<SP>
                 if (pos >= 0){
                     recvMsg = recvMsg.substring(pos + 1);
                 }else {
@@ -149,25 +138,22 @@ public class MessageResolver {
                 try {
                     jsonObj = JSON.parseObject(recvMsg);
                 }catch (Exception e) {
-                    logger.warning("来自"+current_ip+"的电文作废 不是正确的json" + recvMsg);
+                    logger.warning("来自"+current_ip+"的电文作废 不是正确的json\n" + msg);
                 }
 
             }else{
                 // 电文作废
-                logger.warning("来自"+current_ip+"电文作废 不是正确的电文头" + recvMsg);
+                logger.warning("来自"+current_ip+"电文作废 不是正确的电文头\n" + msg);
             }
-            // 清理本条电文
-            recvMsg = "";
 
-            // 处理下一条电文
-            try {
-                recvStr = recvStr.substring(offset + EOML);
-                offset = recvStr.indexOf(EOMS);
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.warning("-------- "+ current_ip +" > "+e.getMessage() + "--------");
-            }
+        }else{
+            // 电文作废
+            logger.warning("来自"+current_ip+"电文作废 不是正确的电文尾\n" + msg);
         }
+
+        // 清理本条电文
+        recvStr = "";
+        recvMsg = "";
 
         return jsonObj;
     }
