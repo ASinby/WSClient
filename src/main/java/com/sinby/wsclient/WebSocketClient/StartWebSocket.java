@@ -29,6 +29,7 @@ public class StartWebSocket {
     private String USERNAME;
 
     private Set<String> UNITED_URI = new HashSet<>();   //服务器地址
+
     /**
      * @PostConstruct 关键注解
      */

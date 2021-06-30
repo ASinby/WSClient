@@ -55,8 +55,8 @@ public class MessageResolver {
 
         TableVO tableVO = new TableVO();
 
-        String onweighter = "0";    //车辆是否上秤
-        String stabilized = "0";    //重量是否稳定
+        String onweighter = "0";    //车辆是否上秤     1 -上秤
+        String stabilized = "0";    //重量是否稳定    !0 -稳定
 
         for(String sigName:param.keySet()){
             if(param.get(sigName).getType().equals("OnWeighter")){  //车辆上秤信号

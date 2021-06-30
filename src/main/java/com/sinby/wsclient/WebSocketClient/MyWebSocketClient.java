@@ -14,7 +14,7 @@ public class MyWebSocketClient extends WebSocketClient {
 
     Logger logger = Logger.getLogger(String.valueOf(MyWebSocketClient.class));
 
-    ApplicationContextHelperUtil applicationContextHelperUtil = new ApplicationContextHelperUtil();
+    ApplicationContextHelperUtil applicationContextHelperUtil = new ApplicationContextHelperUtil(); //解决new对象的为空的问题
 
     String current_uri; //当前连接服务器IP
 
